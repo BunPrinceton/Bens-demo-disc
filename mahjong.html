@@ -474,8 +474,8 @@
                             const tileEl = document.createElement('div');
                             tileEl.className = 'tile';
                             // Center the board layout within the container
-                            const offsetX = 115; // (900 - (13*50 + 20)) / 2
-                            const offsetY = 70;  // (500 - (6*60)) / 2
+                            const offsetX = 115; // Center horizontally
+                            const offsetY = 50;  // Center vertically
                             tileEl.style.left = (offsetX + x * 50 + z * 5) + 'px';
                             tileEl.style.top = (offsetY + y * 60 - z * 5) + 'px';
                             tileEl.style.zIndex = z * 100 + y;
