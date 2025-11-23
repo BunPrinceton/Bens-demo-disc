@@ -80,4 +80,49 @@ Open `asteroids.html` in your browser:
 
 ---
 
+### Tropical Minesweeper (`minesweeper.html`)
+
+Classic Minesweeper with a tropical beach twist - find the hidden coconuts!
+
+### Features
+- Three difficulty levels (Easy: 8x10, Medium: 14x18, Hard: 20x24)
+- Coconuts 🥥 as mines, beach umbrellas 🏖️ as flags
+- Sand-colored tiles with smooth reveal animations
+- Best time tracking for each difficulty level
+- Smart first-click (never hits a mine)
+- Auto-reveal for empty areas
+- Sunny beach background with animated waves
+
+### How to Play
+Open `minesweeper.html` in your browser:
+- **Left Click** - Reveal a tile
+- **Right Click** - Place/remove flag
+- Find all safe tiles without hitting coconuts!
+- Numbers show how many coconuts are adjacent
+- Complete the grid as fast as possible to set a record!
+
+---
+
+### Tropical 2048 (`2048.html`)
+
+Classic 2048 puzzle game with evolving tropical fruits!
+
+### Features
+- 11-stage fruit evolution chain (Grape → Trophy)
+- Smooth tile sliding and merging animations
+- 4x4 grid with classic 2048 mechanics
+- Sunny beach background with animated waves
+- High score persistence
+- Beautiful tropical theme
+- Visual fruit progression guide
+
+### How to Play
+Open `2048.html` in your browser:
+- **Arrow Keys** - Slide tiles in any direction
+- Merge matching fruits to evolve them
+- 🍇 Grape (2) → 🍋 Lemon (4) → 🍊 Orange (8) → 🍎 Apple (16) → 🥥 Coconut (32) → 🍍 Pineapple (64) → 🥑 Avocado (128) → 🍉 Watermelon (256) → 🥭 Mango (512) → 🍈 Melon (1024) → 🏆 Trophy (2048)
+- Reach the 🏆 Trophy to win!
+
+---
+
 Enjoy the tropical vibes while you play!
