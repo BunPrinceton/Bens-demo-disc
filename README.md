@@ -54,4 +54,30 @@ Open `mahjong.html` in your browser:
 
 ---
 
+### Tropical Asteroids (`asteroids.html`)
+
+Classic arcade space shooter with tropical fruits as asteroids!
+
+### Features
+- Pilot a surfboard spaceship through fruit-filled space
+- 8 different tropical fruits as asteroids (Watermelon, Pineapple, Coconut, Orange, Lemon, Kiwi, Grape, Strawberry)
+- Large fruits break into smaller pieces when shot
+- Progressive difficulty - more asteroids each level
+- Lives system with invulnerability frames
+- Particle explosion effects
+- Twinkling starfield background
+- High score tracking
+- Smooth physics and controls
+
+### How to Play
+Open `asteroids.html` in your browser:
+- **W** - Thrust forward
+- **A/D** - Rotate left/right
+- **SPACE** - Shoot
+- Destroy all fruits to advance to the next level
+- Avoid colliding with the fruits!
+- Big fruits (3 hits) break into medium (2 hits) which break into small (1 hit)
+
+---
+
 Enjoy the tropical vibes while you play!
