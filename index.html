@@ -480,35 +480,35 @@
             };
         }
 
-        // Update power-up
-        function updatePowerup() {
-            if (!powerupPosition) return;
+        // Check if power-up is collected (called every frame)
+        function checkPowerupCollection() {
+            if (!powerupPosition || !currentPiece) return;
 
-            // Check if caught by current piece
-            if (currentPiece) {
-                for (let y = 0; y < currentPiece.shape.length; y++) {
-                    for (let x = 0; x < currentPiece.shape[y].length; x++) {
-                        if (currentPiece.shape[y][x]) {
-                            const pieceX = currentPiece.x + x;
-                            const pieceY = currentPiece.y + y;
-                            if (pieceX === powerupPosition.x && pieceY === powerupPosition.y) {
-                                activatePowerup(powerupPosition);
-                                powerupPosition = null;
-                                return;
-                            }
+            for (let y = 0; y < currentPiece.shape.length; y++) {
+                for (let x = 0; x < currentPiece.shape[y].length; x++) {
+                    if (currentPiece.shape[y][x]) {
+                        const pieceX = currentPiece.x + x;
+                        const pieceY = currentPiece.y + y;
+                        if (pieceX === powerupPosition.x && pieceY === powerupPosition.y) {
+                            activatePowerup(powerupPosition);
+                            powerupPosition = null;
+                            return;
                         }
                     }
                 }
             }
+        }
 
-            // Drop power-up
-            if (!board[powerupPosition.y + 1] || board[powerupPosition.y + 1][powerupPosition.x] === 0) {
+        // Update power-up position (called every 500ms)
+        function updatePowerup() {
+            if (!powerupPosition) return;
+
+            // Drop power-up if there's space below
+            if (powerupPosition.y + 1 < ROWS && board[powerupPosition.y + 1][powerupPosition.x] === 0) {
                 powerupPosition.y++;
-            } else {
-                powerupPosition = null; // Remove if hits bottom
             }
-
-            if (powerupPosition && powerupPosition.y >= ROWS) {
+            // If it goes off screen, remove it
+            if (powerupPosition.y >= ROWS) {
                 powerupPosition = null;
             }
         }
@@ -733,10 +733,13 @@
                 dropCounter = 0;
             }
 
-            // Update power-up every 500ms
+            // Update power-up position every 500ms
             if (Math.floor(time / 500) !== Math.floor(lastTime / 500)) {
                 updatePowerup();
             }
+
+            // Check for power-up collection every frame
+            checkPowerupCollection();
 
             drawBeach(time);
             drawBoard();
@@ -793,11 +796,13 @@
                 case 'ArrowLeft':
                     if (!collide(currentPiece, -1, 0)) {
                         currentPiece.x--;
+                        checkPowerupCollection();
                     }
                     break;
                 case 'ArrowRight':
                     if (!collide(currentPiece, 1, 0)) {
                         currentPiece.x++;
+                        checkPowerupCollection();
                     }
                     break;
                 case 'ArrowDown':
@@ -805,18 +810,21 @@
                         currentPiece.y++;
                         score += 1;
                         updateScore();
+                        checkPowerupCollection();
                     }
                     break;
                 case 'ArrowUp':
                     const rotated = rotate(currentPiece);
                     if (!collide(rotated)) {
                         currentPiece = rotated;
+                        checkPowerupCollection();
                     }
                     break;
                 case ' ':
                     while (!collide(currentPiece, 0, 1)) {
                         currentPiece.y++;
                         score += 2;
+                        checkPowerupCollection();
                     }
                     updateScore();
                     dropCounter = dropInterval;
