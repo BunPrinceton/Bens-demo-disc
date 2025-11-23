@@ -169,14 +169,9 @@
             background: linear-gradient(145deg, #FFD700, #FFA500);
         }
 
-        .num-1 { color: #4169E1; }
-        .num-2 { color: #228B22; }
-        .num-3 { color: #FF6347; }
-        .num-4 { color: #9370DB; }
-        .num-5 { color: #8B0000; }
-        .num-6 { color: #008B8B; }
-        .num-7 { color: #000; }
-        .num-8 { color: #808080; }
+        .cell-emoji {
+            font-size: 1.8em;
+        }
 
         #game-over-screen {
             position: fixed;
@@ -209,6 +204,13 @@
             color: #FF6B35;
             padding: 15px 40px;
             font-size: 1.2em;
+            margin: 10px;
+        }
+
+        .game-over-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
             margin-top: 20px;
         }
 
@@ -260,7 +262,10 @@
         <div class="message">
             Best Time: <span id="final-high-score">--</span>
         </div>
-        <button onclick="newGame()">Play Again</button>
+        <div class="game-over-buttons">
+            <button onclick="hideGameOver()">👁️ View Board</button>
+            <button onclick="newGame()">🎮 Play Again</button>
+        </div>
     </div>
 
     <script>
@@ -517,6 +522,18 @@
             }
         }
 
+        // Map numbers to fruit/veggie emojis based on color
+        const numberEmojis = {
+            1: '🫐',  // Blueberry (blue)
+            2: '🥝',  // Kiwi (green)
+            3: '🍓',  // Strawberry (red)
+            4: '🍇',  // Grape (purple)
+            5: '🍒',  // Cherry (dark red)
+            6: '🍋',  // Lemon (cyan-ish yellow)
+            7: '🍆',  // Eggplant (dark/black)
+            8: '🥔'   // Potato (gray/brown)
+        };
+
         function updateCell(row, col) {
             const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
             const cellData = board[row][col];
@@ -527,14 +544,13 @@
                 cell.classList.add('revealed');
                 if (cellData.mine) {
                     cell.classList.add('mine');
-                    cell.textContent = '🥥';
+                    cell.innerHTML = '<span class="cell-emoji">🥥</span>';
                 } else if (cellData.adjacentMines > 0) {
-                    cell.textContent = cellData.adjacentMines;
-                    cell.classList.add(`num-${cellData.adjacentMines}`);
+                    cell.innerHTML = `<span class="cell-emoji">${numberEmojis[cellData.adjacentMines]}</span>`;
                 }
             } else if (cellData.flagged) {
                 cell.classList.add('flagged');
-                cell.textContent = '🏖️';
+                cell.innerHTML = '<span class="cell-emoji">🏖️</span>';
             } else {
                 cell.textContent = '';
             }
@@ -601,6 +617,10 @@
                 highScores[currentDifficulty] ? formatTime(parseInt(highScores[currentDifficulty])) : '--';
             updateHighScoreDisplay();
             gameOverScreen.style.display = 'block';
+        }
+
+        function hideGameOver() {
+            document.getElementById('game-over-screen').style.display = 'none';
         }
 
         // Start game
