@@ -473,8 +473,11 @@
                             // Create DOM element
                             const tileEl = document.createElement('div');
                             tileEl.className = 'tile';
-                            tileEl.style.left = (x * 50 + z * 5) + 'px';
-                            tileEl.style.top = (y * 60 - z * 5) + 'px';
+                            // Center the board layout within the container
+                            const offsetX = 115; // (900 - (13*50 + 20)) / 2
+                            const offsetY = 70;  // (500 - (6*60)) / 2
+                            tileEl.style.left = (offsetX + x * 50 + z * 5) + 'px';
+                            tileEl.style.top = (offsetY + y * 60 - z * 5) + 'px';
                             tileEl.style.zIndex = z * 100 + y;
                             tileEl.innerHTML = `
                                 <div class="tile-emoji">${type.emoji}</div>
