@@ -475,7 +475,7 @@
                             tileEl.className = 'tile';
                             // Center the board layout within the container
                             const offsetX = 115; // Center horizontally
-                            const offsetY = 50;  // Center vertically
+                            const offsetY = 30;  // Adjusted up by 1/4 tile height (20px)
                             tileEl.style.left = (offsetX + x * 50 + z * 5) + 'px';
                             tileEl.style.top = (offsetY + y * 60 - z * 5) + 'px';
                             tileEl.style.zIndex = z * 100 + y;
