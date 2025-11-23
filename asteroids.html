@@ -18,8 +18,41 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: #0a0e27;
+            background: linear-gradient(to bottom, #87CEEB 0%, #FFE4B5 100%);
             overflow: hidden;
+            position: relative;
+        }
+
+        #beach-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .game-wrapper {
+            position: relative;
+            z-index: 10;
+        }
+
+        .sun {
+            position: absolute;
+            top: 50px;
+            right: 100px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #FFD700, #FFA500);
+            border-radius: 50%;
+            box-shadow: 0 0 50px #FFD700;
+            animation: pulse 3s ease-in-out infinite;
+            z-index: 5;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         h1 {
@@ -72,7 +105,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(255, 107, 53, 0.95);
-            padding: 50px;
+            padding: 30px 40px;
             border-radius: 20px;
             text-align: center;
             display: none;
@@ -83,27 +116,27 @@
 
         #game-over-screen h2 {
             color: white;
-            font-size: 3.5em;
-            margin-bottom: 20px;
+            font-size: 2.5em;
+            margin-bottom: 15px;
             text-shadow: 0 0 10px #FFD700;
         }
 
         #game-over-screen .message {
             color: white;
-            font-size: 1.5em;
-            margin: 15px 0;
+            font-size: 1.2em;
+            margin: 10px 0;
         }
 
         #game-over-screen button {
             background: white;
             color: #FF6B35;
             border: none;
-            padding: 15px 50px;
-            font-size: 1.5em;
+            padding: 12px 35px;
+            font-size: 1.2em;
             border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 20px;
+            margin-top: 15px;
             transition: all 0.2s;
         }
 
@@ -124,22 +157,27 @@
     </style>
 </head>
 <body>
-    <h1>🌴 Tropical Asteroids 🌴</h1>
+    <canvas id="beach-background"></canvas>
+    <div class="sun"></div>
 
-    <div class="game-info">
-        <div class="stat">Score: <span id="score">0</span></div>
-        <div class="stat">Level: <span id="level">1</span></div>
-        <div class="stat">High: <span id="high-score">0</span></div>
-        <div class="stat lives">
-            Lives: <span id="lives-display"></span>
+    <div class="game-wrapper">
+        <h1>🌴 Tropical Asteroids 🌴</h1>
+
+        <div class="game-info">
+            <div class="stat">Score: <span id="score">0</span></div>
+            <div class="stat">Level: <span id="level">1</span></div>
+            <div class="stat">High: <span id="high-score">0</span></div>
+            <div class="stat lives">
+                Lives: <span id="lives-display"></span>
+            </div>
         </div>
-    </div>
 
-    <canvas id="game-canvas" width="900" height="700"></canvas>
+        <canvas id="game-canvas" width="900" height="600"></canvas>
 
-    <div class="controls">
-        <div>🎮 <strong>W</strong> Thrust • <strong>A/D</strong> Rotate • <strong>SPACE</strong> Shoot</div>
-        <div>Blast the tropical fruits! Bigger fruits break into smaller pieces!</div>
+        <div class="controls">
+            <div>🎮 <strong>W</strong> Thrust • <strong>A/D</strong> Rotate • <strong>SPACE</strong> Shoot</div>
+            <div>Blast the tropical fruits & veggies! Bigger ones break into smaller pieces!</div>
+        </div>
     </div>
 
     <div id="game-over-screen">
@@ -151,6 +189,70 @@
     </div>
 
     <script>
+        // Beach background setup
+        const bgCanvas = document.getElementById('beach-background');
+        const bgCtx = bgCanvas.getContext('2d');
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+
+        let waves = [];
+        for (let i = 0; i < 5; i++) {
+            waves.push({
+                y: bgCanvas.height - 200 + i * 15,
+                amplitude: 10 + i * 3,
+                frequency: 0.01 - i * 0.001,
+                speed: 0.5 + i * 0.2,
+                offset: Math.random() * 100
+            });
+        }
+
+        function drawBeach(time) {
+            const gradient = bgCtx.createLinearGradient(0, 0, 0, bgCanvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(0.7, '#FFE4B5');
+            bgCtx.fillStyle = gradient;
+            bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+            waves.forEach((wave, index) => {
+                bgCtx.beginPath();
+                bgCtx.moveTo(0, bgCanvas.height);
+                for (let x = 0; x <= bgCanvas.width; x++) {
+                    const y = wave.y + Math.sin(x * wave.frequency + wave.offset + time * wave.speed * 0.001) * wave.amplitude;
+                    bgCtx.lineTo(x, y);
+                }
+                bgCtx.lineTo(bgCanvas.width, bgCanvas.height);
+                bgCtx.closePath();
+                const alpha = 0.3 - index * 0.05;
+                bgCtx.fillStyle = `rgba(64, 224, 208, ${alpha})`;
+                bgCtx.fill();
+            });
+
+            bgCtx.fillStyle = '#F4A460';
+            bgCtx.fillRect(0, bgCanvas.height - 150, bgCanvas.width, 150);
+
+            drawPalmTree(100, bgCanvas.height - 200);
+            drawPalmTree(bgCanvas.width - 150, bgCanvas.height - 180);
+        }
+
+        function drawPalmTree(x, y) {
+            bgCtx.fillStyle = '#8B4513';
+            bgCtx.fillRect(x - 10, y, 20, 100);
+            bgCtx.fillStyle = '#228B22';
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * 60) * Math.PI / 180;
+                bgCtx.beginPath();
+                bgCtx.ellipse(x + Math.cos(angle) * 40, y + Math.sin(angle) * 40, 50, 15, angle, 0, Math.PI * 2);
+                bgCtx.fill();
+            }
+        }
+
+        function animateBeach(time = 0) {
+            drawBeach(time);
+            requestAnimationFrame(animateBeach);
+        }
+        animateBeach();
+
+        // Game canvas setup
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
 
@@ -164,7 +266,7 @@
 
         document.getElementById('high-score').textContent = highScore;
 
-        // Fruit types for asteroids
+        // Fruits and vegetables for asteroids
         const FRUITS = [
             { emoji: '🍉', name: 'Watermelon', color: '#FF6B6B' },
             { emoji: '🍍', name: 'Pineapple', color: '#FFD700' },
@@ -173,7 +275,15 @@
             { emoji: '🍋', name: 'Lemon', color: '#FFFF00' },
             { emoji: '🥝', name: 'Kiwi', color: '#98D8C8' },
             { emoji: '🍇', name: 'Grape', color: '#9B59B6' },
-            { emoji: '🍓', name: 'Strawberry', color: '#FF6B6B' }
+            { emoji: '🍓', name: 'Strawberry', color: '#FF6B6B' },
+            { emoji: '🥕', name: 'Carrot', color: '#FFA500' },
+            { emoji: '🌽', name: 'Corn', color: '#FFD700' },
+            { emoji: '🥒', name: 'Cucumber', color: '#98D8C8' },
+            { emoji: '🥑', name: 'Avocado', color: '#6BCF7F' },
+            { emoji: '🍅', name: 'Tomato', color: '#FF6347' },
+            { emoji: '🥦', name: 'Broccoli', color: '#2C5F2D' },
+            { emoji: '🫑', name: 'Pepper', color: '#FF6B35' },
+            { emoji: '🥬', name: 'Lettuce', color: '#98D8C8' }
         ];
 
         // Ship
