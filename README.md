@@ -1,8 +1,10 @@
 # Bens Demo Disc
 
-A collection of fun web demos and games.
+A collection of fun web demos and games with tropical themes!
 
-## Tropical Tetris
+## Games
+
+### Tropical Tetris (`index.html`)
 
 A fresh take on the classic Tetris game with a tropical beach theme!
 
@@ -23,5 +25,33 @@ Open `index.html` in your browser and use:
 - Down arrow (↓) for soft drop
 - SPACE for hard drop
 - P to pause
+
+---
+
+### Tropical Mahjong (`mahjong.html`)
+
+Classic Mahjong Solitaire with a fresh fruit and vegetable twist!
+
+### Features
+- 18 different fruit and veggie tile types
+- Classic turtle/pyramid board layout
+- 144 tiles (72 pairs to match)
+- Sunny beach background with animated waves
+- Timer and score tracking
+- High score persistence
+- Hint system to find matching pairs
+- Shuffle button when you're stuck
+- Beautiful tropical theme matching the Tetris game
+
+### How to Play
+Open `mahjong.html` in your browser:
+- Click tiles to select them
+- Match pairs of identical fruits/veggies
+- Tiles must be "free" (not covered and at least one side open)
+- Use 💡 Hint button if you're stuck
+- Use 🔄 Shuffle to rearrange free tiles
+- Match all 72 pairs to win!
+
+---
 
 Enjoy the tropical vibes while you play!

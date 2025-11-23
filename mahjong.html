@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tropical Mahjong - Fresh Harvest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #87CEEB 0%, #FFE4B5 100%);
+            overflow: hidden;
+        }
+
+        #beach-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .game-container {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 95vw;
+            max-height: 95vh;
+        }
+
+        h1 {
+            color: #FF6B35;
+            text-align: center;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 15px;
+        }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #FFE4B5, #FFDAB9);
+            border-radius: 10px;
+            border: 3px solid #FF6B35;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2C5F2D;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background: #FF6B35;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #FF8555;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #board-container {
+            position: relative;
+            width: 900px;
+            height: 500px;
+            margin: 0 auto;
+        }
+
+        .tile {
+            position: absolute;
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            border: 3px solid #8B4513;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+            user-select: none;
+        }
+
+        .tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .tile.selected {
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            border-color: #FF6B35;
+            transform: translateY(-8px);
+        }
+
+        .tile.blocked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .tile.matched {
+            animation: matchAnimation 0.5s ease-out;
+        }
+
+        @keyframes matchAnimation {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        .tile-emoji {
+            font-size: 2.5em;
+        }
+
+        .tile-label {
+            font-size: 0.7em;
+            color: #2C5F2D;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .sun {
+            position: absolute;
+            top: 50px;
+            right: 100px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #FFD700, #FFA500);
+            border-radius: 50%;
+            box-shadow: 0 0 50px #FFD700;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        #game-over-screen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 107, 53, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            z-index: 100;
+            border: 5px solid white;
+        }
+
+        #game-over-screen h2 {
+            color: white;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        #game-over-screen .message {
+            color: white;
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+
+        #game-over-screen button {
+            background: white;
+            color: #FF6B35;
+            padding: 15px 40px;
+            font-size: 1.2em;
+        }
+
+        .hint-flash {
+            animation: hintFlash 1s ease-in-out 3;
+        }
+
+        @keyframes hintFlash {
+            0%, 100% { box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3); }
+            50% { box-shadow: 0 0 20px #FFD700, 3px 3px 8px rgba(0, 0, 0, 0.3); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="beach-background"></canvas>
+    <div class="sun"></div>
+
+    <div class="game-container">
+        <h1>🌴 Tropical Mahjong 🌴</h1>
+
+        <div class="controls-bar">
+            <div class="stats">
+                <div>Score: <span id="score">0</span></div>
+                <div>Time: <span id="time">0:00</span></div>
+                <div>Pairs: <span id="pairs">0</span>/72</div>
+                <div style="color: #FF6B35;">High: <span id="high-score">0</span></div>
+            </div>
+            <div class="buttons">
+                <button id="hint-btn" onclick="showHint()">💡 Hint</button>
+                <button id="shuffle-btn" onclick="shuffleTiles()">🔄 Shuffle</button>
+                <button id="new-game-btn" onclick="newGame()">🎮 New Game</button>
+            </div>
+        </div>
+
+        <div id="board-container"></div>
+    </div>
+
+    <div id="game-over-screen">
+        <h2 id="game-over-title">You Win!</h2>
+        <div class="message">
+            Final Score: <span id="final-score">0</span>
+        </div>
+        <div class="message">
+            Time: <span id="final-time">0:00</span>
+        </div>
+        <div class="message">
+            High Score: <span id="final-high-score">0</span>
+        </div>
+        <button onclick="newGame()">Play Again</button>
+    </div>
+
+    <script>
+        // Beach background
+        const bgCanvas = document.getElementById('beach-background');
+        const bgCtx = bgCanvas.getContext('2d');
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+
+        let waves = [];
+        for (let i = 0; i < 5; i++) {
+            waves.push({
+                y: bgCanvas.height - 200 + i * 15,
+                amplitude: 10 + i * 3,
+                frequency: 0.01 - i * 0.001,
+                speed: 0.5 + i * 0.2,
+                offset: Math.random() * 100
+            });
+        }
+
+        function drawBeach(time) {
+            const gradient = bgCtx.createLinearGradient(0, 0, 0, bgCanvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(0.7, '#FFE4B5');
+            bgCtx.fillStyle = gradient;
+            bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+            waves.forEach((wave, index) => {
+                bgCtx.beginPath();
+                bgCtx.moveTo(0, bgCanvas.height);
+                for (let x = 0; x <= bgCanvas.width; x++) {
+                    const y = wave.y + Math.sin(x * wave.frequency + wave.offset + time * wave.speed * 0.001) * wave.amplitude;
+                    bgCtx.lineTo(x, y);
+                }
+                bgCtx.lineTo(bgCanvas.width, bgCanvas.height);
+                bgCtx.closePath();
+                const alpha = 0.3 - index * 0.05;
+                bgCtx.fillStyle = `rgba(64, 224, 208, ${alpha})`;
+                bgCtx.fill();
+            });
+
+            bgCtx.fillStyle = '#F4A460';
+            bgCtx.fillRect(0, bgCanvas.height - 150, bgCanvas.width, 150);
+
+            drawPalmTree(100, bgCanvas.height - 200);
+            drawPalmTree(bgCanvas.width - 150, bgCanvas.height - 180);
+        }
+
+        function drawPalmTree(x, y) {
+            bgCtx.fillStyle = '#8B4513';
+            bgCtx.fillRect(x - 10, y, 20, 100);
+            bgCtx.fillStyle = '#228B22';
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * 60) * Math.PI / 180;
+                bgCtx.beginPath();
+                bgCtx.ellipse(x + Math.cos(angle) * 40, y + Math.sin(angle) * 40, 50, 15, angle, 0, Math.PI * 2);
+                bgCtx.fill();
+            }
+        }
+
+        function animateBeach(time = 0) {
+            drawBeach(time);
+            requestAnimationFrame(animateBeach);
+        }
+        animateBeach();
+
+        // Tile types with fruits and vegetables
+        const TILE_TYPES = [
+            { emoji: '🍎', name: 'Apple' },
+            { emoji: '🍊', name: 'Orange' },
+            { emoji: '🍋', name: 'Lemon' },
+            { emoji: '🍌', name: 'Banana' },
+            { emoji: '🍉', name: 'Melon' },
+            { emoji: '🍇', name: 'Grape' },
+            { emoji: '🍓', name: 'Berry' },
+            { emoji: '🥝', name: 'Kiwi' },
+            { emoji: '🥥', name: 'Coconut' },
+            { emoji: '🍍', name: 'Pine' },
+            { emoji: '🥕', name: 'Carrot' },
+            { emoji: '🌽', name: 'Corn' },
+            { emoji: '🥒', name: 'Pickle' },
+            { emoji: '🥑', name: 'Avocado' },
+            { emoji: '🍅', name: 'Tomato' },
+            { emoji: '🥦', name: 'Broccoli' },
+            { emoji: '🫑', name: 'Pepper' },
+            { emoji: '🥬', name: 'Lettuce' }
+        ];
+
+        // Game state
+        let tiles = [];
+        let selectedTile = null;
+        let score = 0;
+        let matchedPairs = 0;
+        let startTime = null;
+        let timerInterval = null;
+        let highScore = localStorage.getItem('tropicalMahjongHighScore') || 0;
+        let hintsUsed = 0;
+        let shufflesUsed = 0;
+
+        document.getElementById('high-score').textContent = highScore;
+
+        // Classic turtle layout
+        const LAYOUT = [
+            // Layer 0 (bottom)
+            [
+                [0,0,1,1,1,1,1,1,1,1,1,1,0,0],
+                [0,0,0,1,1,1,1,1,1,1,1,0,0,0],
+                [0,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [0,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                [0,0,0,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,1,1,1,1,1,1,1,1,1,1,0,0]
+            ],
+            // Layer 1
+            [
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,1,1,1,1,1,1,0,0,0,0],
+                [0,0,0,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,1,1,1,1,1,1,1,1,1,1,0,0],
+                [0,0,0,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,0,0,1,1,1,1,1,1,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            ],
+            // Layer 2
+            [
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,1,1,1,1,1,1,0,0,0,0],
+                [0,0,0,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,0,0,1,1,1,1,1,1,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            ],
+            // Layer 3
+            [
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,1,1,1,1,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            ],
+            // Layer 4 (top)
+            [
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            ]
+        ];
+
+        function createTiles() {
+            tiles = [];
+            const boardContainer = document.getElementById('board-container');
+            boardContainer.innerHTML = '';
+
+            // Count total tiles needed
+            let tileCount = 0;
+            LAYOUT.forEach(layer => {
+                layer.forEach(row => {
+                    row.forEach(cell => {
+                        if (cell === 1) tileCount++;
+                    });
+                });
+            });
+
+            // Create pairs (need tileCount/2 pairs, with 4 of each type)
+            let tilePool = [];
+            let typeIndex = 0;
+            for (let i = 0; i < tileCount / 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    tilePool.push(TILE_TYPES[typeIndex % TILE_TYPES.length]);
+                }
+                typeIndex++;
+            }
+
+            // Shuffle tile pool
+            tilePool.sort(() => Math.random() - 0.5);
+
+            // Place tiles according to layout
+            let poolIndex = 0;
+            LAYOUT.forEach((layer, z) => {
+                layer.forEach((row, y) => {
+                    row.forEach((cell, x) => {
+                        if (cell === 1) {
+                            const type = tilePool[poolIndex++];
+                            const tile = {
+                                id: tiles.length,
+                                x: x,
+                                y: y,
+                                z: z,
+                                type: type,
+                                matched: false,
+                                element: null
+                            };
+                            tiles.push(tile);
+
+                            // Create DOM element
+                            const tileEl = document.createElement('div');
+                            tileEl.className = 'tile';
+                            tileEl.style.left = (x * 50 + z * 5) + 'px';
+                            tileEl.style.top = (y * 60 - z * 5) + 'px';
+                            tileEl.style.zIndex = z * 100 + y;
+                            tileEl.innerHTML = `
+                                <div class="tile-emoji">${type.emoji}</div>
+                                <div class="tile-label">${type.name}</div>
+                            `;
+                            tileEl.onclick = () => selectTile(tile);
+                            tile.element = tileEl;
+                            boardContainer.appendChild(tileEl);
+                        }
+                    });
+                });
+            });
+
+            updateTileStates();
+        }
+
+        function isTileFree(tile) {
+            if (tile.matched) return false;
+
+            // Check if covered
+            const covering = tiles.find(t =>
+                !t.matched &&
+                t.z === tile.z + 1 &&
+                Math.abs(t.x - tile.x) <= 1 &&
+                Math.abs(t.y - tile.y) <= 1
+            );
+            if (covering) return false;
+
+            // Check if blocked on both sides
+            const leftBlocked = tiles.some(t =>
+                !t.matched &&
+                t.z === tile.z &&
+                t.x === tile.x - 1 &&
+                t.y === tile.y
+            );
+            const rightBlocked = tiles.some(t =>
+                !t.matched &&
+                t.z === tile.z &&
+                t.x === tile.x + 1 &&
+                t.y === tile.y
+            );
+
+            return !(leftBlocked && rightBlocked);
+        }
+
+        function updateTileStates() {
+            tiles.forEach(tile => {
+                if (!tile.matched) {
+                    const isFree = isTileFree(tile);
+                    if (isFree) {
+                        tile.element.classList.remove('blocked');
+                    } else {
+                        tile.element.classList.add('blocked');
+                    }
+                }
+            });
+        }
+
+        function selectTile(tile) {
+            if (tile.matched || !isTileFree(tile)) return;
+
+            if (!startTime) {
+                startTime = Date.now();
+                startTimer();
+            }
+
+            if (selectedTile === tile) {
+                // Deselect
+                tile.element.classList.remove('selected');
+                selectedTile = null;
+            } else if (selectedTile === null) {
+                // First selection
+                tile.element.classList.add('selected');
+                selectedTile = tile;
+            } else {
+                // Second selection - check for match
+                if (selectedTile.type.emoji === tile.type.emoji) {
+                    // Match!
+                    matchTiles(selectedTile, tile);
+                } else {
+                    // No match - swap selection
+                    selectedTile.element.classList.remove('selected');
+                    tile.element.classList.add('selected');
+                    selectedTile = tile;
+                }
+            }
+        }
+
+        function matchTiles(tile1, tile2) {
+            tile1.matched = true;
+            tile2.matched = true;
+            tile1.element.classList.add('matched');
+            tile2.element.classList.add('matched');
+            tile1.element.classList.remove('selected');
+
+            setTimeout(() => {
+                tile1.element.style.display = 'none';
+                tile2.element.style.display = 'none';
+            }, 500);
+
+            matchedPairs++;
+            score += 100 - (hintsUsed * 10) - (shufflesUsed * 20);
+            document.getElementById('score').textContent = score;
+            document.getElementById('pairs').textContent = matchedPairs;
+
+            selectedTile = null;
+            updateTileStates();
+
+            // Check for win
+            if (matchedPairs === 72) {
+                endGame(true);
+            } else if (!hasAvailableMoves()) {
+                endGame(false);
+            }
+        }
+
+        function hasAvailableMoves() {
+            const freeTiles = tiles.filter(t => !t.matched && isTileFree(t));
+            for (let i = 0; i < freeTiles.length; i++) {
+                for (let j = i + 1; j < freeTiles.length; j++) {
+                    if (freeTiles[i].type.emoji === freeTiles[j].type.emoji) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function showHint() {
+            const freeTiles = tiles.filter(t => !t.matched && isTileFree(t));
+            for (let i = 0; i < freeTiles.length; i++) {
+                for (let j = i + 1; j < freeTiles.length; j++) {
+                    if (freeTiles[i].type.emoji === freeTiles[j].type.emoji) {
+                        freeTiles[i].element.classList.add('hint-flash');
+                        freeTiles[j].element.classList.add('hint-flash');
+                        hintsUsed++;
+                        setTimeout(() => {
+                            freeTiles[i].element.classList.remove('hint-flash');
+                            freeTiles[j].element.classList.remove('hint-flash');
+                        }, 3000);
+                        return;
+                    }
+                }
+            }
+        }
+
+        function shuffleTiles() {
+            const freeTiles = tiles.filter(t => !t.matched && isTileFree(t));
+            if (freeTiles.length < 2) return;
+
+            // Get all types from free tiles
+            const types = freeTiles.map(t => t.type);
+            types.sort(() => Math.random() - 0.5);
+
+            // Reassign types
+            freeTiles.forEach((tile, i) => {
+                tile.type = types[i];
+                tile.element.innerHTML = `
+                    <div class="tile-emoji">${tile.type.emoji}</div>
+                    <div class="tile-label">${tile.type.name}</div>
+                `;
+            });
+
+            shufflesUsed++;
+            if (selectedTile) {
+                selectedTile.element.classList.remove('selected');
+                selectedTile = null;
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('time').textContent =
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function endGame(won) {
+            clearInterval(timerInterval);
+
+            const gameOverScreen = document.getElementById('game-over-screen');
+            const title = document.getElementById('game-over-title');
+
+            if (won) {
+                title.textContent = 'You Win! 🎉';
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('tropicalMahjongHighScore', highScore);
+                }
+            } else {
+                title.textContent = 'No More Moves!';
+            }
+
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-time').textContent = timeStr;
+            document.getElementById('final-high-score').textContent = highScore;
+            document.getElementById('high-score').textContent = highScore;
+
+            gameOverScreen.style.display = 'block';
+        }
+
+        function newGame() {
+            document.getElementById('game-over-screen').style.display = 'none';
+            clearInterval(timerInterval);
+
+            score = 0;
+            matchedPairs = 0;
+            startTime = null;
+            selectedTile = null;
+            hintsUsed = 0;
+            shufflesUsed = 0;
+
+            document.getElementById('score').textContent = score;
+            document.getElementById('time').textContent = '0:00';
+            document.getElementById('pairs').textContent = '0/72';
+
+            createTiles();
+        }
+
+        // Start game
+        newGame();
+    </script>
+</body>
+</html>
