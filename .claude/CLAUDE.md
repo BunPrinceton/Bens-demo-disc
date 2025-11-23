@@ -13,6 +13,9 @@ Bens Demo Disc is a collection of browser-based games with tropical themes. All 
 - `asteroids.html` - Tropical Asteroids space shooter
 - `mahjong.html` - Tropical Mahjong solitaire
 - `minesweeper.html` - Tropical Minesweeper coconut hunt
+- `snake.html` - Tropical Snake island slither
+- `2048.html` - Tropical 2048 fruit evolution puzzle
+- `bubble-shooter.html` - Tropical Bubble Shooter match-3
 - `README.md` - Game descriptions and controls
 
 ### Shared Design System
@@ -79,15 +82,53 @@ waves = [{ y, amplitude, frequency, speed, offset }]
 - Separate high scores per difficulty
 - localStorage keys: `tropicalMinesweeperEasy`, `tropicalMinesweeperMedium`, `tropicalMinesweeperHard`
 
+**Tropical Snake (snake.html):**
+- 30x30 grid (600x600 canvas), 20px tiles
+- 18 fruit/veggie types as food items
+- Classic snake mechanics with arrow/WASD controls
+- Power-up system: 🐢 Slow Down, ⚡ Speed Boost, 🌟 Shield, 🎯 Magnet, 💎 Double Points
+- Power-ups spawn with 25% chance when eating food
+- Base speed: 120ms, modified by speed power-ups
+- Shield allows passing through walls and self
+- Magnet attracts food within radius of 8 tiles
+- Score: 10 points per food, 25 per power-up (doubled with 💎)
+- Responsive layout: game wrapper fills 95vw × 95vh, canvas scales to fit with aspect-ratio: 1
+- localStorage key: `tropicalSnakeHighScore`
+
+**Tropical 2048 (2048.html):**
+- 4x4 grid with 11-stage fruit evolution: 🍇(2) → 🍋(4) → 🍊(8) → 🍎(16) → 🥥(32) → 🍍(64) → 🥑(128) → 🍉(256) → 🥭(512) → 🍈(1024) → 🏆(2048)
+- Three-column layout (left: fruit guide & controls, center: game board, right: scores & button)
+- Grid layout: CSS Grid with `grid-template-columns: 1fr auto 1fr`
+- Fixed tile positioning: 120px tiles, 130px spacing (10px gap), 530px grid size
+- Absolute positioning with pixel coordinates for tiles
+- Responsive scaling via CSS transform on smaller screens (0.7x at <600px, 0.5x at <400px)
+- Stacks to single column layout on screens <1000px wide
+- Arrow keys for movement, classic 2048 merge mechanics
+- localStorage key: `tropical2048Best`
+
+**Tropical Bubble Shooter (bubble-shooter.html):**
+- Hexagonal grid layout for bubbles
+- 7 fruit types: 🍇 Grape, 🍋 Lemon, 🍊 Orange, 🍎 Apple, 🥝 Kiwi, 🫐 Blueberry, 🍓 Strawberry
+- Mouse aim with trajectory preview line
+- Wall bouncing physics for shots
+- Match-3+ mechanics: matching bubbles pop, disconnected bubbles fall
+- Combo system with multiplier bonuses
+- Next bubble preview
+- Score boxes positioned on sides (SCORE: top-left, BEST: top-right) for more viewport space
+- localStorage key: `tropicalBubbleShooterHighScore`
+
 ## Development Commands
 
 ### Running the Games
 ```bash
 # Open any game directly in browser
-open index.html        # Tropical Tetris
-open asteroids.html    # Tropical Asteroids
-open mahjong.html      # Tropical Mahjong
-open minesweeper.html  # Tropical Minesweeper
+open index.html           # Tropical Tetris
+open asteroids.html       # Tropical Asteroids
+open mahjong.html         # Tropical Mahjong
+open minesweeper.html     # Tropical Minesweeper
+open snake.html           # Tropical Snake
+open 2048.html            # Tropical 2048
+open bubble-shooter.html  # Tropical Bubble Shooter
 ```
 
 ### Testing
@@ -146,6 +187,28 @@ ctx.font = '24px Arial';
 ctx.textAlign = 'center';
 ctx.textBaseline = 'middle';
 ctx.fillText(emoji, x, y);
+```
+
+### Responsive Design Patterns
+
+**Viewport-Fitting Layouts:**
+- Snake: Game wrapper fills 95vw × 95vh, canvas scales with `aspect-ratio: 1` and responsive max constraints
+- 2048: Three-column CSS Grid layout with responsive stacking on <1000px screens
+
+**Canvas Scaling Approaches:**
+- **CSS Transform**: 2048 uses `transform: scale()` on grid element (0.7x at <600px, 0.5x at <400px)
+- **Responsive Constraints**: Snake uses `max-width: 90vw` and `max-height: 70vh` with `aspect-ratio: 1`
+- **Fixed with Visual Scaling**: Asteroids uses CSS `transform: scale()` to decouple visual size from game physics
+
+**Layout Patterns:**
+- **Three-Column Grid** (2048): `grid-template-columns: 1fr auto 1fr` with left sidebar, center game, right sidebar
+- **Flexbox Wrapper** (Snake): Full viewport wrapper with centered, scaled canvas
+- **Fixed Positioning** (Bubble Shooter): Score boxes positioned absolutely at viewport edges
+
+**Responsive Font Sizing:**
+Use `clamp()` for fluid typography:
+```css
+font-size: clamp(1em, 3vw, 1.2em);
 ```
 
 ## Modifying Games

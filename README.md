@@ -125,4 +125,61 @@ Open `2048.html` in your browser:
 
 ---
 
+### Tropical Bubble Shooter (`bubble-shooter.html`)
+
+Classic bubble shooter with colorful tropical fruits!
+
+### Features
+- 7 different fruit types (Grape, Lemon, Orange, Apple, Kiwi, Blueberry, Strawberry)
+- Hexagonal bubble grid layout
+- Mouse aim with trajectory preview
+- Wall bouncing mechanics
+- Match 3+ bubbles to pop them
+- Gravity physics - disconnected bubbles fall
+- Combo system with bonus points
+- Next bubble preview
+- High score tracking
+- Sunny beach background with animated waves
+
+### How to Play
+Open `bubble-shooter.html` in your browser:
+- **Move Mouse** - Aim your shot
+- **Click** - Shoot bubble
+- Match 3 or more of the same fruit to pop them
+- Clear disconnected bubbles for bonus points
+- Build combos for multiplier bonuses
+- Clear all bubbles to win!
+- Don't let bubbles reach the bottom!
+
+---
+
+### Tropical Snake (`snake.html`)
+
+Classic Snake game with tropical fruits, vegetables, and exciting power-ups!
+
+### Features
+- Grow your snake by eating tropical fruits and vegetables
+- 18 different fruit/veggie types to collect
+- 5 unique power-ups:
+  - 🐢 Slow Down: Slows snake movement temporarily
+  - ⚡ Speed Boost: Speeds up snake movement temporarily
+  - 🌟 Shield: Pass through walls and yourself safely
+  - 🎯 Magnet: Attracts nearby food toward you
+  - 💎 Double Points: 2x score for all food collected
+- Power-ups spawn randomly (25% chance when eating food)
+- Grass-patterned game board
+- High score persistence
+- Sunny beach background with animated waves
+
+### How to Play
+Open `snake.html` in your browser:
+- **Arrow Keys** or **WASD** - Control snake direction
+- Eat fruits and vegetables to grow longer
+- Avoid hitting walls or yourself (unless you have the shield!)
+- Collect power-ups for special abilities
+- Each food item is worth 10 points (20 with Double Points)
+- Power-ups are worth 25 points (50 with Double Points)
+
+---
+
 Enjoy the tropical vibes while you play!

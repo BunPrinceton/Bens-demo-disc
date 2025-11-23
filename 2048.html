@@ -18,7 +18,8 @@
             align-items: center;
             min-height: 100vh;
             background: linear-gradient(to bottom, #87CEEB 0%, #FFE4B5 100%);
-            overflow: hidden;
+            overflow: auto;
+            padding: 10px;
         }
 
         #beach-background {
@@ -35,34 +36,79 @@
             z-index: 10;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 30px;
+            padding: 15px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             text-align: center;
+            max-width: 95vw;
+            max-height: 95vh;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 15px;
+            align-items: start;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+
+        .center-panel {
+            grid-column: 2;
+            grid-row: 1 / 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+
+        .palm-decoration {
+            position: absolute;
+            top: 20px;
+            width: 60px;
+            height: 80px;
+            pointer-events: none;
+        }
+
+        .palm-decoration.left {
+            left: 20px;
+        }
+
+        .palm-decoration.right {
+            right: 20px;
         }
 
         h1 {
             color: #FF6B35;
-            font-size: 2.5em;
+            font-size: clamp(1.5em, 5vw, 2.5em);
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .subtitle {
             color: #2C5F2D;
-            font-size: 1.2em;
-            margin-bottom: 20px;
+            font-size: clamp(0.9em, 3vw, 1.2em);
+            margin-bottom: 8px;
         }
 
         .score-container {
             display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: flex-start;
         }
 
         .score-box {
             background: linear-gradient(135deg, #FFE4B5, #FFDAB9);
-            padding: 15px 30px;
+            padding: 10px 25px;
             border-radius: 10px;
             border: 3px solid #FF6B35;
         }
@@ -86,30 +132,33 @@
             border-radius: 15px;
             padding: 10px;
             display: inline-block;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
 
         .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 120px);
-            grid-template-rows: repeat(4, 120px);
-            gap: 10px;
             position: relative;
+            width: min(530px, 80vw);
+            height: min(530px, 80vw);
+            max-width: 530px;
+            max-height: 530px;
+            background: transparent;
+            margin: 0 auto;
         }
 
         .cell {
+            position: absolute;
             background: rgba(255, 255, 255, 0.5);
-            border-radius: 10px;
+            border-radius: 8px;
             border: 2px solid #D2B48C;
+            width: 120px;
+            height: 120px;
         }
 
         .tile {
             position: absolute;
-            width: 120px;
-            height: 120px;
             background: linear-gradient(145deg, #ffffff, #f0f0f0);
-            border-radius: 10px;
+            border-radius: 8px;
             border: 3px solid #8B4513;
             display: flex;
             flex-direction: column;
@@ -117,6 +166,8 @@
             justify-content: center;
             transition: all 0.15s ease-in-out;
             box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+            width: 120px;
+            height: 120px;
         }
 
         .tile.new {
@@ -152,11 +203,12 @@
 
         .controls {
             background: #FFE4B5;
-            padding: 15px;
+            padding: 10px;
             border-radius: 10px;
-            font-size: 1em;
+            font-size: 0.85em;
             color: #2C5F2D;
-            margin-bottom: 15px;
+            text-align: center;
+            border: 3px solid #FF6B35;
         }
 
         .controls strong {
@@ -244,31 +296,91 @@
 
         .fruit-guide {
             background: linear-gradient(135deg, #98D8C8, #6BCF7F);
-            padding: 15px;
+            padding: 10px;
             border-radius: 10px;
-            margin-top: 15px;
             border: 3px solid #2C5F2D;
+            text-align: left;
         }
 
         .fruit-guide h3 {
             color: #2C5F2D;
-            margin-bottom: 10px;
-            font-size: 1.2em;
+            margin-bottom: 8px;
+            font-size: 1em;
+            text-align: center;
         }
 
         .fruit-progression {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-            font-size: 0.9em;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.85em;
             color: #2C5F2D;
         }
 
         .fruit-item {
             background: rgba(255, 255, 255, 0.7);
-            padding: 5px 10px;
+            padding: 5px 8px;
             border-radius: 5px;
+            text-align: left;
+        }
+
+        @media (max-width: 1000px) {
+            .game-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 10px;
+            }
+
+            .left-panel {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .center-panel {
+                grid-column: 1;
+                grid-row: 2;
+            }
+
+            .right-panel {
+                grid-column: 1;
+                grid-row: 3;
+            }
+
+            .score-container {
+                flex-direction: row;
+                justify-content: center;
+            }
+
+            .fruit-progression {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 600px) or (max-height: 800px) {
+            .grid {
+                transform: scale(0.7);
+                transform-origin: center;
+            }
+
+            .game-container {
+                padding: 10px;
+            }
+
+            .score-box {
+                padding: 8px 15px;
+            }
+
+            .fruit-guide {
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 400px) or (max-height: 650px) {
+            .grid {
+                transform: scale(0.5);
+            }
         }
     </style>
 </head>
@@ -277,64 +389,76 @@
     <div class="sun"></div>
 
     <div class="game-container">
-        <h1>🌴 Tropical 2048 🌴</h1>
-        <div class="subtitle">Merge fruits to evolve them!</div>
+        <canvas class="palm-decoration left" width="60" height="80"></canvas>
+        <canvas class="palm-decoration right" width="60" height="80"></canvas>
 
-        <div class="score-container">
-            <div class="score-box">
-                <div class="score-label">SCORE</div>
-                <div class="score-value" id="score">0</div>
+        <!-- Left Panel: Fruit Guide & Controls -->
+        <div class="left-panel">
+            <div class="fruit-guide">
+                <h3>🌺 Fruit Evolution 🌺</h3>
+                <div class="fruit-progression">
+                    <div class="fruit-item">🍇2</div>
+                    <div class="fruit-item">🍋4</div>
+                    <div class="fruit-item">🍊8</div>
+                    <div class="fruit-item">🍎16</div>
+                    <div class="fruit-item">🥥32</div>
+                    <div class="fruit-item">🍍64</div>
+                    <div class="fruit-item">🥑128</div>
+                    <div class="fruit-item">🍉256</div>
+                    <div class="fruit-item">🥭512</div>
+                    <div class="fruit-item">🍈1024</div>
+                    <div class="fruit-item">🏆2048</div>
+                </div>
             </div>
-            <div class="score-box">
-                <div class="score-label">BEST</div>
-                <div class="score-value" id="best">0</div>
-            </div>
-        </div>
 
-        <div id="game-board">
-            <div class="grid">
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div id="tiles-container"></div>
+            <div class="controls">
+                Use <strong>Arrow Keys</strong> to slide and merge fruits!
             </div>
         </div>
 
-        <div class="controls">
-            Use <strong>Arrow Keys</strong> to slide and merge fruits!
+        <!-- Center Panel: Game Board -->
+        <div class="center-panel">
+            <h1>🌴 Tropical 2048 🌴</h1>
+            <div class="subtitle">Merge fruits to evolve them!</div>
+
+            <div id="game-board">
+                <div class="grid">
+                    <div class="cell" style="left: 10px; top: 10px;"></div>
+                    <div class="cell" style="left: 140px; top: 10px;"></div>
+                    <div class="cell" style="left: 270px; top: 10px;"></div>
+                    <div class="cell" style="left: 400px; top: 10px;"></div>
+                    <div class="cell" style="left: 10px; top: 140px;"></div>
+                    <div class="cell" style="left: 140px; top: 140px;"></div>
+                    <div class="cell" style="left: 270px; top: 140px;"></div>
+                    <div class="cell" style="left: 400px; top: 140px;"></div>
+                    <div class="cell" style="left: 10px; top: 270px;"></div>
+                    <div class="cell" style="left: 140px; top: 270px;"></div>
+                    <div class="cell" style="left: 270px; top: 270px;"></div>
+                    <div class="cell" style="left: 400px; top: 270px;"></div>
+                    <div class="cell" style="left: 10px; top: 400px;"></div>
+                    <div class="cell" style="left: 140px; top: 400px;"></div>
+                    <div class="cell" style="left: 270px; top: 400px;"></div>
+                    <div class="cell" style="left: 400px; top: 400px;"></div>
+                    <div id="tiles-container"></div>
+                </div>
+            </div>
         </div>
 
-        <div class="button-container">
-            <button onclick="newGame()">🎮 New Game</button>
-        </div>
+        <!-- Right Panel: Scores -->
+        <div class="right-panel">
+            <div class="score-container">
+                <div class="score-box">
+                    <div class="score-label">SCORE</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-label">BEST</div>
+                    <div class="score-value" id="best">0</div>
+                </div>
+            </div>
 
-        <div class="fruit-guide">
-            <h3>🌺 Fruit Evolution Chain 🌺</h3>
-            <div class="fruit-progression">
-                <div class="fruit-item">🍇2</div>
-                <div class="fruit-item">🍋4</div>
-                <div class="fruit-item">🍊8</div>
-                <div class="fruit-item">🍎16</div>
-                <div class="fruit-item">🥥32</div>
-                <div class="fruit-item">🍍64</div>
-                <div class="fruit-item">🥑128</div>
-                <div class="fruit-item">🍉256</div>
-                <div class="fruit-item">🥭512</div>
-                <div class="fruit-item">🍈1024</div>
-                <div class="fruit-item">🏆2048</div>
+            <div class="button-container">
+                <button onclick="newGame()">🎮 New Game</button>
             </div>
         </div>
     </div>
@@ -387,22 +511,36 @@
 
             bgCtx.fillStyle = '#F4A460';
             bgCtx.fillRect(0, bgCanvas.height - 150, bgCanvas.width, 150);
-
-            drawPalmTree(100, bgCanvas.height - 200);
-            drawPalmTree(bgCanvas.width - 150, bgCanvas.height - 180);
         }
 
-        function drawPalmTree(x, y) {
-            bgCtx.fillStyle = '#8B4513';
-            bgCtx.fillRect(x - 10, y, 20, 100);
-            bgCtx.fillStyle = '#228B22';
+        // Draw palm tree decorations next to title
+        function drawPalmDecoration(canvas) {
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+
+            // Trunk
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(centerX - 4, 20, 8, 50);
+
+            // Leaves
+            ctx.fillStyle = '#228B22';
             for (let i = 0; i < 6; i++) {
                 const angle = (i * 60) * Math.PI / 180;
-                bgCtx.beginPath();
-                bgCtx.ellipse(x + Math.cos(angle) * 40, y + Math.sin(angle) * 40, 50, 15, angle, 0, Math.PI * 2);
-                bgCtx.fill();
+                ctx.beginPath();
+                ctx.ellipse(
+                    centerX + Math.cos(angle) * 20,
+                    20 + Math.sin(angle) * 20,
+                    25, 8, angle, 0, Math.PI * 2
+                );
+                ctx.fill();
             }
         }
+
+        // Draw decorative palm trees
+        const leftPalm = document.querySelector('.palm-decoration.left');
+        const rightPalm = document.querySelector('.palm-decoration.right');
+        drawPalmDecoration(leftPalm);
+        drawPalmDecoration(rightPalm);
 
         function animateBeach(time = 0) {
             drawBeach(time);
@@ -477,6 +615,7 @@
 
                         const tile = document.createElement('div');
                         tile.className = 'tile';
+                        // Use absolute positioning with pixels
                         tile.style.left = (j * 130 + 10) + 'px';
                         tile.style.top = (i * 130 + 10) + 'px';
                         tile.style.borderColor = fruit.color;

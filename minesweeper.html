@@ -169,8 +169,42 @@
             background: linear-gradient(145deg, #FFD700, #FFA500);
         }
 
+        .cell-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .cell-emoji {
             font-size: 1.8em;
+        }
+
+        .cell-emoji img {
+            width: 36px;
+            height: 36px;
+            display: block;
+            object-fit: contain;
+        }
+
+        .cell-number {
+            position: absolute;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: white;
+            text-shadow:
+                -1px -1px 0 #000,
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000,
+                0 0 3px #000;
+            pointer-events: none;
+        }
+
+        .cell-number.hidden {
+            display: none;
         }
 
         #game-over-screen {
@@ -242,7 +276,11 @@
                     <button onclick="setDifficulty('medium')" id="medium-btn">Medium</button>
                     <button onclick="setDifficulty('hard')" id="hard-btn">Hard</button>
                 </div>
-                <button onclick="newGame()">🎮 New Game</button>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="toggleNumbers()" id="numbers-btn">🔢 Numbers: ON</button>
+                    <button onclick="randomizeEmojis()">🔀 Shuffle</button>
+                    <button onclick="newGame()">🎮 New Game</button>
+                </div>
             </div>
 
             <div id="game-board"></div>
@@ -348,6 +386,7 @@
         let firstClick = true;
         let startTime = null;
         let timerInterval = null;
+        let showNumbers = localStorage.getItem('tropicalMinesweeperShowNumbers') !== 'false'; // Default true
         let highScores = {
             easy: localStorage.getItem('tropicalMinesweeperEasy') || null,
             medium: localStorage.getItem('tropicalMinesweeperMedium') || null,
@@ -355,6 +394,7 @@
         };
 
         updateHighScoreDisplay();
+        updateNumbersButton();
 
         function setDifficulty(diff) {
             currentDifficulty = diff;
@@ -382,6 +422,9 @@
             clearInterval(timerInterval);
             document.getElementById('timer').textContent = '0:00';
             document.getElementById('game-over-screen').style.display = 'none';
+
+            // Randomize emoji assignments for visual variety
+            randomizeEmojis();
 
             // Create board
             board = [];
@@ -522,17 +565,35 @@
             }
         }
 
-        // Map numbers to fruit/veggie emojis based on color
-        const numberEmojis = {
-            1: '🫐',  // Blueberry (blue)
-            2: '🥝',  // Kiwi (green)
-            3: '🍓',  // Strawberry (red)
-            4: '🍇',  // Grape (purple)
-            5: '🍒',  // Cherry (dark red)
-            6: '🍋',  // Lemon (cyan-ish yellow)
-            7: '🍆',  // Eggplant (dark/black)
-            8: '🥔'   // Potato (gray/brown)
+        // Map numbers to fruit/veggie emoji options based on Minesweeper colors
+        const numberEmojiOptions = {
+            1: ['🫐'],  // Blue - Blueberry
+            2: ['🥝', '🥒', '🥑', '🍏', '🫑', '🥦'],  // Green variety
+            3: ['🍓', '🍎', '🍅', '🌶️'],  // Red variety
+            4: ['🍇', '🍆'],  // Purple - Grape, Eggplant
+            5: ['🍒'],  // Dark red - Cherry
+            6: ['🍋', '🍌', '🌽', '🍈', '🍍'],  // Yellow/Cyan variety
+            7: ['🫘', '🫒'],  // Dark/Black - Beans, Olive
+            8: ['🥔', '🧄', '🧅', '🍄']  // Gray/Brown variety
         };
+
+        let numberEmojis = {};
+
+        function randomizeEmojis() {
+            // Randomly pick one emoji from each number's options
+            for (let num = 1; num <= 8; num++) {
+                const options = numberEmojiOptions[num];
+                numberEmojis[num] = options[Math.floor(Math.random() * options.length)];
+            }
+            // Update all revealed cells to show new emojis
+            for (let r = 0; r < board.length; r++) {
+                for (let c = 0; c < board[0].length; c++) {
+                    if (board[r][c].revealed && !board[r][c].mine) {
+                        updateCell(r, c);
+                    }
+                }
+            }
+        }
 
         function updateCell(row, col) {
             const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
@@ -544,13 +605,25 @@
                 cell.classList.add('revealed');
                 if (cellData.mine) {
                     cell.classList.add('mine');
-                    cell.innerHTML = '<span class="cell-emoji">🥥</span>';
+                    cell.innerHTML = '<div class="cell-content"><span class="cell-emoji">🥥</span></div>';
                 } else if (cellData.adjacentMines > 0) {
-                    cell.innerHTML = `<span class="cell-emoji">${numberEmojis[cellData.adjacentMines]}</span>`;
+                    const numberClass = showNumbers ? '' : 'hidden';
+                    const emojiValue = numberEmojis[cellData.adjacentMines];
+                    const emojiHTML = emojiValue.startsWith('data:')
+                        ? `<img src="${emojiValue}" alt="fruit">`
+                        : emojiValue;
+                    cell.innerHTML = `
+                        <div class="cell-content">
+                            <span class="cell-emoji">${emojiHTML}</span>
+                            <span class="cell-number ${numberClass}">${cellData.adjacentMines}</span>
+                        </div>
+                    `;
+                } else {
+                    cell.innerHTML = '';
                 }
             } else if (cellData.flagged) {
                 cell.classList.add('flagged');
-                cell.innerHTML = '<span class="cell-emoji">🏖️</span>';
+                cell.innerHTML = '<div class="cell-content"><span class="cell-emoji">🏖️</span></div>';
             } else {
                 cell.textContent = '';
             }
@@ -570,6 +643,25 @@
         function updateMinesDisplay() {
             const config = difficulties[currentDifficulty];
             document.getElementById('mines-left').textContent = config.mines - flagged;
+        }
+
+        function toggleNumbers() {
+            showNumbers = !showNumbers;
+            localStorage.setItem('tropicalMinesweeperShowNumbers', showNumbers);
+            updateNumbersButton();
+            // Refresh all revealed cells to show/hide numbers
+            for (let r = 0; r < board.length; r++) {
+                for (let c = 0; c < board[0].length; c++) {
+                    if (board[r][c].revealed) {
+                        updateCell(r, c);
+                    }
+                }
+            }
+        }
+
+        function updateNumbersButton() {
+            const btn = document.getElementById('numbers-btn');
+            btn.textContent = showNumbers ? '🔢 Numbers: ON' : '🎨 Numbers: OFF';
         }
 
         function startTimer() {
